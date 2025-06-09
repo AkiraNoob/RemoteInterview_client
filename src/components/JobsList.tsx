@@ -7,13 +7,13 @@ export default function JobList(props: ComponentPropsWithoutRef<"div">) {
   return (
     <div {...props} className={cn("space-y-4", props.className)}>
       {new Array(10).fill(0).map((item, index) => (
-        <JobCard key={index} />
+        <JobListCard key={index} />
       ))}
     </div>
   );
 }
 
-const JobCard = () => {
+export const JobListCard = () => {
   return (
     <div className="border p-2 flex gap-2 rounded-lg bg-other-rested-bg hover:border-c-primary group transition-all ease-linear shadow-md">
       <CompanyLogo src="/logo_title.png" className="w-[106px] h-[106px]" />

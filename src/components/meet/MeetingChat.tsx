@@ -57,6 +57,8 @@ export default function MeetingChat() {
 
         <div className="flex items-center gap-2 px-3 border rounded-lg">
           <Input
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
             placeholder="Gửi tin nhắn"
             className={"border-none focus-visible:ring-0 shadow-none"}
           />

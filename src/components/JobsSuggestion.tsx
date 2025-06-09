@@ -1,3 +1,5 @@
+import { ComponentPropsWithoutRef } from "react";
+import { cn } from "~/lib/utils";
 import { Badge } from "./ui/badge";
 import CompanyLogo from "./ui/company-logo";
 
@@ -8,16 +10,22 @@ export default function JobsSuggestion() {
 
       <div className={"space-y-3"}>
         {new Array(4).fill(0).map((item, index) => (
-          <JobCard key={index} />
+          <JobSuggestionCard key={index} />
         ))}
       </div>
     </div>
   );
 }
 
-const JobCard = () => {
+export const JobSuggestionCard = (props: ComponentPropsWithoutRef<"div">) => {
   return (
-    <div className="p-3 rounded-lg border border-transparent bg-c-text-dark/30 hover:border-c-primary group transition-all ease-linear space-y-2">
+    <div
+      {...props}
+      className={cn(
+        "p-3 rounded-lg border bg-c-text-dark/30 hover:border-c-primary group transition-all ease-linear space-y-2",
+        props.className
+      )}
+    >
       <div className="flex gap-2 items-center">
         <CompanyLogo src="/logo_title.png" className="w-[50px] h-[50px]" />
         <div className="flex-1">
