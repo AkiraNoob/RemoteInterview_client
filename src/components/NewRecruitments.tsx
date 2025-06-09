@@ -1,6 +1,6 @@
 "use client";
 
-import { ListFilter } from "lucide-react";
+import { ChevronLeft, ChevronRight, ListFilter } from "lucide-react";
 import { useState } from "react";
 import { cn } from "~/lib/utils";
 import { JobSuggestionCard } from "./JobsSuggestion";
@@ -62,6 +62,11 @@ export default function NewRecruitments() {
 
   const [filterValue, setFilterValue] = useState<number | null>(null);
 
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const totalPage = 24;
+  const hasNextPage = true;
+  const hasPreviousPage = true;
+
   return (
     <div className="space-y-2">
       <p className="text-2xl font-bold text-c-primary">Việc làm mới</p>
@@ -104,6 +109,31 @@ export default function NewRecruitments() {
         {new Array(12).fill(0).map((item, index) => (
           <JobSuggestionCard key={index} className="w-[calc((100%-32px)/3)]" />
         ))}
+      </div>
+      <div className="flex items-center justify-center gap-4 mt-5">
+        <Button
+          disabled={!hasPreviousPage}
+          className={cn(
+            "rounded-full size-9, border-c-primary hover:bg-c-primary hover:text-c-text-dark"
+          )}
+          size={"icon"}
+          variant={"outline"}
+        >
+          <ChevronLeft size={"5"} />
+        </Button>
+        <p className="text-c-text-light text-sm font-normal">
+          {currentPage} / {totalPage} trang
+        </p>
+        <Button
+          disabled={!hasNextPage}
+          className={cn(
+            "rounded-full size-9, border-c-primary hover:bg-c-primary hover:text-c-text-dark"
+          )}
+          size={"icon"}
+          variant={"outline"}
+        >
+          <ChevronRight size={"5"} />
+        </Button>
       </div>
     </div>
   );

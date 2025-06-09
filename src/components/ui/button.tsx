@@ -23,6 +23,9 @@ const buttonVariants = cva(
         custom:
           "bg-c-primary text-c-text-dark shadow-xs hover:bg-c-p-foreground",
         error: "bg-c-error hover:bg-c-error-foreground text-c-text-dark",
+        success: "bg-green-500 text-white shadow-xs hover:bg-green-600",
+        warning: "bg-yellow-500 text-white shadow-xs hover:bg-yellow-600",
+        danger: "bg-red-500 text-white shadow-xs hover:bg-red-600",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",
