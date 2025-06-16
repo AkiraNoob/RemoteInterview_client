@@ -1,7 +1,6 @@
-import { Bell } from "lucide-react";
+import Notifications from "~/components/Notifications";
 import { ProfileDropdownMenu } from "~/components/TopBar";
 import RecruitmentSideBar from "~/components/recruiter-component/RecruitmentSideBar";
-import { Button } from "~/components/ui/button";
 
 export default function Layout({
   children,
@@ -19,12 +18,7 @@ export default function Layout({
           </div>
         </div>
         <div className="flex items-center gap-4 shrink-0">
-          <Button
-            size="icon"
-            className="cursor-pointer rounded-full bg-transparent"
-          >
-            <Bell className="text-c-text-dark" fill="#fef3e2" />
-          </Button>
+          <Notifications admin />
           <ProfileDropdownMenu />
         </div>
       </div>

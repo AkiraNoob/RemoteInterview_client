@@ -48,7 +48,7 @@ export default function ShortenedJobDescription() {
         <p className="text-md text-c-text-light">Hạn nộp hồ sơ: 05/07/2025</p>
       </div>
 
-      <Button className="w-full">
+      <Button className="w-full" variant={"custom"}>
         <Send color="#ffffff" />
         Ứng tuyển ngay
       </Button>

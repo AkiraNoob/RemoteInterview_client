@@ -1,14 +1,51 @@
-import { ComponentPropsWithoutRef } from "react";
+"use client";
+
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ComponentPropsWithoutRef, useState } from "react";
 import { cn } from "~/lib/utils";
 import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
 import CompanyLogo from "./ui/company-logo";
 
 export default function JobList(props: ComponentPropsWithoutRef<"div">) {
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const totalPage = 24;
+  const hasNextPage = true;
+  const hasPreviousPage = true;
+
   return (
-    <div {...props} className={cn("space-y-4", props.className)}>
-      {new Array(10).fill(0).map((item, index) => (
-        <JobListCard key={index} />
-      ))}
+    <div>
+      <div {...props} className={cn("space-y-4", props.className)}>
+        {new Array(5).fill(0).map((item, index) => (
+          <JobListCard key={index} />
+        ))}
+      </div>
+
+      <div className="flex items-center justify-center gap-4 mt-5">
+        <Button
+          disabled={!hasPreviousPage}
+          className={cn(
+            "rounded-full size-9, border-c-primary hover:bg-c-primary hover:text-c-text-dark"
+          )}
+          size={"icon"}
+          variant={"outline"}
+        >
+          <ChevronLeft size={"5"} />
+        </Button>
+        <p className="text-c-text-light text-sm font-normal">
+          {currentPage} / {totalPage} trang
+        </p>
+        <Button
+          disabled={!hasNextPage}
+          className={cn(
+            "rounded-full size-9, border-c-primary hover:bg-c-primary hover:text-c-text-dark"
+          )}
+          size={"icon"}
+          variant={"outline"}
+        >
+          <ChevronRight size={"5"} />
+        </Button>
+      </div>
     </div>
   );
 }

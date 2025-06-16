@@ -14,7 +14,7 @@ export default function DetailedJobDescription() {
                 detailed designs; Accountable for unit test leakage; Contributes
                 to system architecture and design decisions
               </p>
-              <ul>
+              <ul className="list-class">
                 <li>
                   Develop and maintain websites and real-time front-end systems
                   across multiple platforms: PC, Mobile, Tablet.

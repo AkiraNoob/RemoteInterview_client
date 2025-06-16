@@ -52,7 +52,7 @@ const RegisterForm = () => {
         )}
       </div>
 
-      <Button className="w-full" type="submit">
+      <Button className="w-full" type="submit" variant={"custom"}>
         Đăng kí
       </Button>
     </form>

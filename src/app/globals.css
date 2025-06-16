@@ -137,10 +137,6 @@
   }
 }
 
-button {
-  cursor: pointer;
-}
-
 ::-webkit-scrollbar {
   width: 5px;
   height: 5px;
@@ -159,8 +155,7 @@ button {
   --sidebar-width: 400px;
 }
 
-/* 
-ol,
+/* ol,
 ul,
 menu {
   display: block;
@@ -170,6 +165,19 @@ menu {
   padding-inline-start: 40px;
   unicode-bidi: isolate;
 } */
+
+.list-class {
+  display: block;
+  list-style-type: disc;
+  margin-block-start: 1em;
+  margin-block-end: 1em;
+  padding-inline-start: 40px;
+  unicode-bidi: isolate;
+}
+
+.break-word-legacy {
+  word-break: break-word;
+}
 
 /* 
 .dark {

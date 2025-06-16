@@ -180,7 +180,7 @@ export default function MonthView({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-3xl my-5 tracking-tighter font-bold"
+          className="text-2xl my-2 tracking-tighter font-bold"
         >
           {currentDate.toLocaleString("vi-VN", { month: "long" })}{" "}
           {currentDate.getFullYear()}
@@ -212,124 +212,129 @@ export default function MonthView({
           )}
         </div>
       </div>
-      <AnimatePresence initial={false} custom={direction} mode="wait">
-        <motion.div
-          key={`${currentDate.getFullYear()}-${currentDate.getMonth()}`}
-          custom={direction}
-          variants={{
-            ...pageTransitionVariants,
-            center: {
-              ...pageTransitionVariants.center,
-              transition: {
-                opacity: { duration: 0.2 },
-                staggerChildren: 0.02,
+      <div className="!h-[600px] overflow-y-scroll">
+        <AnimatePresence initial={false} custom={direction} mode="wait">
+          <motion.div
+            key={`${currentDate.getFullYear()}-${currentDate.getMonth()}`}
+            custom={direction}
+            variants={{
+              ...pageTransitionVariants,
+              center: {
+                ...pageTransitionVariants.center,
+                transition: {
+                  opacity: { duration: 0.2 },
+                  staggerChildren: 0.02,
+                },
               },
-            },
-          }}
-          initial="enter"
-          animate="center"
-          exit="exit"
-          className="grid grid-cols-7 gap-1 sm:gap-2"
-        >
-          {daysOfWeek.map((day, idx) => (
-            <div
-              key={idx}
-              className="text-left my-8 text-4xl tracking-tighter font-medium"
-            >
-              {day}
-            </div>
-          ))}
-
-          {Array.from({ length: startOffset }).map((_, idx) => (
-            <div key={`offset-${idx}`} className="h-[150px] opacity-50">
-              <div className={clsx("font-semibold relative text-3xl mb-1")}>
-                {lastDateOfPrevMonth - startOffset + idx + 1}
-              </div>
-            </div>
-          ))}
-
-          {daysInMonth.map((dayObj) => {
-            const dayEvents = getters.getEventsForDay(dayObj.day, currentDate);
-
-            return (
-              <motion.div
-                className="hover:z-50 border-none h-[150px] rounded group flex flex-col"
-                key={dayObj.day}
-                variants={itemVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
+            }}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            className="grid grid-cols-7 gap-1 sm:gap-2"
+          >
+            {daysOfWeek.map((day, idx) => (
+              <div
+                key={idx}
+                className="text-left my-8 text-xl tracking-tighter font-medium"
               >
-                <Card
-                  className="shadow-md cursor-pointer overflow-hidden relative flex p-4 border h-full"
-                  onClick={() => handleAddEvent(dayObj.day)}
-                >
-                  <div
-                    className={clsx(
-                      "font-semibold relative text-3xl mb-1",
-                      dayEvents.length > 0
-                        ? "text-primary-600"
-                        : "text-muted-foreground",
-                      new Date().getDate() === dayObj.day &&
-                        new Date().getMonth() === currentDate.getMonth() &&
-                        new Date().getFullYear() === currentDate.getFullYear()
-                        ? "text-secondary-500"
-                        : ""
-                    )}
-                  >
-                    {dayObj.day}
-                  </div>
-                  <div className="flex-grow flex flex-col gap-2 w-full">
-                    <AnimatePresence mode="wait">
-                      {dayEvents?.length > 0 && (
-                        <motion.div
-                          key={dayEvents[0].id}
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -20 }}
-                          transition={{ duration: 0.3 }}
-                        >
-                          <EventStyled
-                            event={{
-                              ...dayEvents[0],
-                              CustomEventComponent,
-                              minmized: true,
-                            }}
-                            CustomEventModal={CustomEventModal}
-                          />
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                    {dayEvents.length > 1 && (
-                      <Badge
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleShowMoreEvents(dayEvents);
-                        }}
-                        variant="outline"
-                        className="hover:bg-default-200 absolute right-2 text-xs top-2 transition duration-300"
-                      >
-                        {dayEvents.length > 1
-                          ? `+${dayEvents.length - 1}`
-                          : " "}
-                      </Badge>
-                    )}
-                  </div>
+                {day}
+              </div>
+            ))}
 
-                  {/* Hover Text */}
-                  {dayEvents.length === 0 && (
-                    <div className="absolute inset-0 bg-primary/20 bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <span className="text-black tracking-tighter text-lg font-semibold">
-                        Thêm sự kiện
-                      </span>
+            {Array.from({ length: startOffset }).map((_, idx) => (
+              <div key={`offset-${idx}`} className="h-[150px] opacity-50">
+                <div className={clsx("font-semibold relative text-xl mb-1")}>
+                  {lastDateOfPrevMonth - startOffset + idx + 1}
+                </div>
+              </div>
+            ))}
+
+            {daysInMonth.map((dayObj) => {
+              const dayEvents = getters.getEventsForDay(
+                dayObj.day,
+                currentDate
+              );
+
+              return (
+                <motion.div
+                  className="hover:z-50 border-none h-[150px] rounded group flex flex-col"
+                  key={dayObj.day}
+                  variants={itemVariants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                >
+                  <Card
+                    className="shadow-md cursor-pointer overflow-hidden relative flex p-4 border h-full"
+                    onClick={() => handleAddEvent(dayObj.day)}
+                  >
+                    <div
+                      className={clsx(
+                        "font-semibold relative text-xl mb-1",
+                        dayEvents.length > 0
+                          ? "text-primary-600"
+                          : "text-muted-foreground",
+                        new Date().getDate() === dayObj.day &&
+                          new Date().getMonth() === currentDate.getMonth() &&
+                          new Date().getFullYear() === currentDate.getFullYear()
+                          ? "text-secondary-500"
+                          : ""
+                      )}
+                    >
+                      {dayObj.day}
                     </div>
-                  )}
-                </Card>
-              </motion.div>
-            );
-          })}
-        </motion.div>
-      </AnimatePresence>
+                    <div className="flex-grow flex flex-col gap-2 w-full">
+                      <AnimatePresence mode="wait">
+                        {dayEvents?.length > 0 && (
+                          <motion.div
+                            key={dayEvents[0].id}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -20 }}
+                            transition={{ duration: 0.3 }}
+                          >
+                            <EventStyled
+                              event={{
+                                ...dayEvents[0],
+                                CustomEventComponent,
+                                minmized: true,
+                              }}
+                              CustomEventModal={CustomEventModal}
+                            />
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                      {dayEvents.length > 1 && (
+                        <Badge
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleShowMoreEvents(dayEvents);
+                          }}
+                          variant="outline"
+                          className="hover:bg-default-200 absolute right-2 text-xs top-2 transition duration-300"
+                        >
+                          {dayEvents.length > 1
+                            ? `+${dayEvents.length - 1}`
+                            : " "}
+                        </Badge>
+                      )}
+                    </div>
+
+                    {/* Hover Text */}
+                    {dayEvents.length === 0 && (
+                      <div className="absolute inset-0 bg-primary/20 bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <span className="text-black tracking-tighter text-lg font-semibold">
+                          Thêm sự kiện
+                        </span>
+                      </div>
+                    )}
+                  </Card>
+                </motion.div>
+              );
+            })}
+          </motion.div>
+        </AnimatePresence>
+      </div>
     </div>
   );
 }

@@ -2,15 +2,14 @@ import { BriefcaseBusiness, Settings } from "lucide-react";
 import { Button } from "../ui/button";
 
 const items = [
-  // {
-  //   title: "Báo cáo",
-  //   url: "#",
-  //   icon: <ChartLine size={32} />,
-  // },
-
   {
     title: "Tin tuyển dụng",
-    url: "#",
+    url: "/recruitment",
+    icon: <BriefcaseBusiness />,
+  },
+  {
+    title: "Lịch phỏng vấn",
+    url: "/recruitment/schedule",
     icon: <BriefcaseBusiness />,
   },
   {

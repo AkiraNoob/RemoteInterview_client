@@ -32,17 +32,17 @@ export default function SchedulerViewFilteration({
   stopDayEventSummary = false,
   CustomComponents,
   classNames,
+  enableAddEvent = true,
 }: {
   views?: Views;
   stopDayEventSummary?: boolean;
   CustomComponents?: CustomComponents;
   classNames?: ClassNames;
+  enableAddEvent?: boolean;
 }) {
   const { setOpen } = useModal();
   const [activeView, setActiveView] = useState<string>("day");
   const [clientSide, setClientSide] = useState(false);
-
-  console.log("activeView", activeView);
 
   useEffect(() => {
     setClientSide(true);
@@ -110,7 +110,7 @@ export default function SchedulerViewFilteration({
           CustomAddEventModal={
             CustomComponents?.CustomEventModal?.CustomAddEventModal?.CustomForm
           }
-        />{" "}
+        />
       </CustomModal>
     );
   }
@@ -125,7 +125,7 @@ export default function SchedulerViewFilteration({
   }, []);
 
   return (
-    <div className="flex w-full flex-col">
+    <div className="flex w-full flex-col px-4">
       <div className="flex w-full">
         <div className="dayly-weekly-monthly-selection relative w-full">
           <Tabs
@@ -133,7 +133,7 @@ export default function SchedulerViewFilteration({
             onValueChange={setActiveView}
             className={cn("w-full", classNames?.tabs)}
           >
-            <div className="flex justify-between items-center mb-4">
+            <div className="flex justify-between items-center mb-2">
               <TabsList className="grid grid-cols-3">
                 {viewsSelector?.includes("day") && (
                   <TabsTrigger value="day">
@@ -175,23 +175,26 @@ export default function SchedulerViewFilteration({
                 )}
               </TabsList>
 
-              {/* Add Event Button */}
-              {CustomComponents?.customButtons?.CustomAddEventButton ? (
-                <div onClick={() => handleAddEvent()}>
-                  {CustomComponents?.customButtons.CustomAddEventButton}
-                </div>
-              ) : (
-                <Button
-                  onClick={() => handleAddEvent()}
-                  className={classNames?.buttons?.addEvent}
-                  variant="custom"
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  Thêm sự kiện
-                </Button>
+              {enableAddEvent && (
+                <>
+                  {/* Add Event Button */}
+                  {CustomComponents?.customButtons?.CustomAddEventButton ? (
+                    <div onClick={() => handleAddEvent()}>
+                      {CustomComponents?.customButtons.CustomAddEventButton}
+                    </div>
+                  ) : (
+                    <Button
+                      onClick={() => handleAddEvent()}
+                      className={classNames?.buttons?.addEvent}
+                      variant="custom"
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      Thêm sự kiện
+                    </Button>
+                  )}
+                </>
               )}
             </div>
-
             {viewsSelector?.includes("day") && (
               <TabsContent value="day">
                 <AnimatePresence mode="wait">

@@ -18,7 +18,7 @@ export default function DetailRecruitmentInfo() {
     <div className="bg-white rounded-lg p-5 space-y-2">
       <p className="font-semibold text-2xl">Tiêu đề tuyển dụng</p>
       <div className="flex items-center gap-2">
-        <span className="text-md font-semibold">Từ khoá:</span>
+        <span className="text-md font-semibold">Ngành nghề:</span>
         <div className="flex flex-wrap gap-3">
           <Badge variant={"light"}>Developer</Badge>
           <Badge variant={"light"}>IT</Badge>

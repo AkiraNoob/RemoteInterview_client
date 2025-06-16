@@ -186,9 +186,7 @@ export default function CustomModal({
                 {subheading && (
                   <p className="text-muted-foreground mb-4">{subheading}</p>
                 )}
-                <div className="pt-[0.5em] flex flex-col flex-grow">
-                  {children}
-                </div>
+                <div className="flex flex-col flex-grow">{children}</div>
               </motion.div>
             </motion.div>
           )}
@@ -201,9 +199,7 @@ export default function CustomModal({
               {subheading && (
                 <DialogDescription>{subheading}</DialogDescription>
               )}
-              <div className="pt-[0.5em] flex flex-col flex-grow">
-                {children}
-              </div>
+              <div className="flex flex-col flex-grow">{children}</div>
             </DialogHeader>
           </DialogContent>
         </Dialog>

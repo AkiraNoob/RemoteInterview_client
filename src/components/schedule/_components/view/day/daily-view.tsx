@@ -293,13 +293,13 @@ export default function DailyView({
   }, [currentDate]);
 
   return (
-    <div className="">
+    <div className="flex flex-col">
       <div className="flex justify-between gap-3 flex-wrap mb-5">
-        <h1 className="text-3xl font-semibold mb-4">
+        <h1 className="text-2xl font-semibold mb-4">
           {getFormattedDayTitle()}
         </h1>
 
-        <div className="flex ml-auto  gap-3">
+        <div className="flex ml-auto gap-3">
           {prevButton ? (
             <div onClick={handlePrevDay}>{prevButton}</div>
           ) : (
@@ -326,165 +326,167 @@ export default function DailyView({
           )}
         </div>
       </div>
-      <AnimatePresence initial={false} custom={direction} mode="wait">
-        <motion.div
-          key={currentDate.toISOString()}
-          custom={direction}
-          variants={pageTransitionVariants}
-          initial="enter"
-          animate="center"
-          exit="exit"
-          transition={{
-            x: { type: "spring", stiffness: 300, damping: 30 },
-            opacity: { duration: 0.2 },
-          }}
-          className="flex flex-col gap-4"
-        >
-          {!stopDayEventSummary && (
-            <div className="all-day-events">
-              <AnimatePresence initial={false}>
-                {dayEvents && dayEvents?.length
-                  ? dayEvents?.map((event, eventIndex) => {
-                      return (
-                        <motion.div
-                          key={event.id}
-                          initial={{ opacity: 0, y: -10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -10 }}
-                          transition={{ duration: 0.2 }}
-                          className="mb-2"
-                        >
-                          <EventStyled
-                            event={{
-                              ...event,
-                              CustomEventComponent,
-                              minmized: false,
-                            }}
-                            CustomEventModal={CustomEventModal}
-                          />
-                        </motion.div>
-                      );
-                    })
-                  : "No events for today"}
-              </AnimatePresence>
-            </div>
-          )}
-
-          <div className="relative rounded-md bg-default-50 hover:bg-default-100 transition duration-400">
-            <motion.div
-              className="relative rounded-xl flex ease-in-out"
-              ref={hoursColumnRef}
-              variants={containerVariants}
-              initial="hidden" // Ensure initial state is hidden
-              animate="visible" // Trigger animation to visible state
-              onMouseMove={handleMouseMove}
-              onMouseLeave={() => setDetailedHour(null)}
-            >
-              <div className="flex  flex-col">
-                {hours.map((hour, index) => (
-                  <motion.div
-                    key={`hour-${index}`}
-                    variants={itemVariants}
-                    className="cursor-pointer   transition duration-300  p-4 h-[64px] text-left text-sm text-muted-foreground border-default-200"
-                  >
-                    {hour}
-                  </motion.div>
-                ))}
-              </div>
-              <div className="flex relative flex-grow flex-col ">
-                {Array.from({ length: 24 }).map((_, index) => (
-                  <div
-                    onClick={() => {
-                      handleAddEventDay(detailedHour as string);
-                    }}
-                    key={`hour-${index}`}
-                    className="cursor-pointer w-full relative border-b  hover:bg-default-200/50  transition duration-300  p-4 h-[64px] text-left text-sm text-muted-foreground border-default-200"
-                  >
-                    <div className="absolute bg-accent flex items-center justify-center text-xs opacity-0 transition left-0 top-0 duration-250 hover:opacity-100 w-full h-full">
-                      Add Event
-                    </div>
-                  </div>
-                ))}
+      <div className="!h-[600px] overflow-y-scroll">
+        <AnimatePresence initial={false} custom={direction} mode="wait">
+          <motion.div
+            key={currentDate.toISOString()}
+            custom={direction}
+            variants={pageTransitionVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{
+              x: { type: "spring", stiffness: 300, damping: 30 },
+              opacity: { duration: 0.2 },
+            }}
+            className="flex flex-col flex-1 gap-4"
+          >
+            {!stopDayEventSummary && (
+              <div className="all-day-events">
                 <AnimatePresence initial={false}>
                   {dayEvents && dayEvents?.length
                     ? dayEvents?.map((event, eventIndex) => {
-                        // Find which time group this event belongs to
-                        let eventsInSamePeriod = 1;
-                        let periodIndex = 0;
-
-                        for (let i = 0; i < timeGroups.length; i++) {
-                          const groupIndex = timeGroups[i].findIndex(
-                            (e) => e.id === event.id
-                          );
-                          if (groupIndex !== -1) {
-                            eventsInSamePeriod = timeGroups[i].length;
-                            periodIndex = groupIndex;
-                            break;
-                          }
-                        }
-
-                        const {
-                          height,
-                          left,
-                          maxWidth,
-                          minWidth,
-                          top,
-                          zIndex,
-                        } = handlers.handleEventStyling(event, dayEvents, {
-                          eventsInSamePeriod,
-                          periodIndex,
-                          adjustForPeriod: true,
-                        });
                         return (
                           <motion.div
                             key={event.id}
-                            style={{
-                              minHeight: height,
-                              top: top,
-                              left: left,
-                              maxWidth: maxWidth,
-                              minWidth: minWidth,
-                              padding: "0 2px",
-                              boxSizing: "border-box",
-                            }}
-                            className="flex transition-all duration-1000 flex-grow flex-col z-50 absolute"
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.9 }}
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
                             transition={{ duration: 0.2 }}
+                            className="mb-2"
                           >
                             <EventStyled
                               event={{
                                 ...event,
                                 CustomEventComponent,
-                                minmized: true,
+                                minmized: false,
                               }}
                               CustomEventModal={CustomEventModal}
                             />
                           </motion.div>
                         );
                       })
-                    : ""}
+                    : "No events for today"}
                 </AnimatePresence>
               </div>
-            </motion.div>
-
-            {detailedHour && (
-              <div
-                className="absolute left-[50px] w-[calc(100%-53px)] h-[2px] bg-primary/40 rounded-full pointer-events-none"
-                style={{ top: `${timelinePosition}px` }}
-              >
-                <Badge
-                  variant="outline"
-                  className="absolute -translate-y-1/2 bg-white z-50 left-[-20px] text-xs"
-                >
-                  {detailedHour}
-                </Badge>
-              </div>
             )}
-          </div>
-        </motion.div>
-      </AnimatePresence>
+
+            <div className="relative rounded-md bg-default-50 hover:bg-default-100 transition duration-400">
+              <motion.div
+                className="relative rounded-xl flex ease-in-out"
+                ref={hoursColumnRef}
+                variants={containerVariants}
+                initial="hidden" // Ensure initial state is hidden
+                animate="visible" // Trigger animation to visible state
+                onMouseMove={handleMouseMove}
+                onMouseLeave={() => setDetailedHour(null)}
+              >
+                <div className="flex  flex-col">
+                  {hours.map((hour, index) => (
+                    <motion.div
+                      key={`hour-${index}`}
+                      variants={itemVariants}
+                      className="cursor-pointer   transition duration-300  p-4 h-[64px] text-left text-sm text-muted-foreground border-default-200"
+                    >
+                      {hour}
+                    </motion.div>
+                  ))}
+                </div>
+                <div className="flex relative flex-grow flex-col ">
+                  {Array.from({ length: 24 }).map((_, index) => (
+                    <div
+                      onClick={() => {
+                        handleAddEventDay(detailedHour as string);
+                      }}
+                      key={`hour-${index}`}
+                      className="cursor-pointer w-full relative border-b  hover:bg-default-200/50  transition duration-300  p-4 h-[64px] text-left text-sm text-muted-foreground border-default-200"
+                    >
+                      <div className="absolute bg-accent flex items-center justify-center text-xs opacity-0 transition left-0 top-0 duration-250 hover:opacity-100 w-full h-full">
+                        Add Event
+                      </div>
+                    </div>
+                  ))}
+                  <AnimatePresence initial={false}>
+                    {dayEvents && dayEvents?.length
+                      ? dayEvents?.map((event, eventIndex) => {
+                          // Find which time group this event belongs to
+                          let eventsInSamePeriod = 1;
+                          let periodIndex = 0;
+
+                          for (let i = 0; i < timeGroups.length; i++) {
+                            const groupIndex = timeGroups[i].findIndex(
+                              (e) => e.id === event.id
+                            );
+                            if (groupIndex !== -1) {
+                              eventsInSamePeriod = timeGroups[i].length;
+                              periodIndex = groupIndex;
+                              break;
+                            }
+                          }
+
+                          const {
+                            height,
+                            left,
+                            maxWidth,
+                            minWidth,
+                            top,
+                            zIndex,
+                          } = handlers.handleEventStyling(event, dayEvents, {
+                            eventsInSamePeriod,
+                            periodIndex,
+                            adjustForPeriod: true,
+                          });
+                          return (
+                            <motion.div
+                              key={event.id}
+                              style={{
+                                minHeight: height,
+                                top: top,
+                                left: left,
+                                maxWidth: maxWidth,
+                                minWidth: minWidth,
+                                padding: "0 2px",
+                                boxSizing: "border-box",
+                              }}
+                              className="flex transition-all duration-1000 flex-grow flex-col z-50 absolute"
+                              initial={{ opacity: 0, scale: 0.9 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              exit={{ opacity: 0, scale: 0.9 }}
+                              transition={{ duration: 0.2 }}
+                            >
+                              <EventStyled
+                                event={{
+                                  ...event,
+                                  CustomEventComponent,
+                                  minmized: true,
+                                }}
+                                CustomEventModal={CustomEventModal}
+                              />
+                            </motion.div>
+                          );
+                        })
+                      : ""}
+                  </AnimatePresence>
+                </div>
+              </motion.div>
+
+              {detailedHour && (
+                <div
+                  className="absolute left-[50px] w-[calc(100%-53px)] h-[2px] bg-primary/40 rounded-full pointer-events-none"
+                  style={{ top: `${timelinePosition}px` }}
+                >
+                  <Badge
+                    variant="outline"
+                    className="absolute -translate-y-1/2 bg-white z-50 left-[-20px] text-xs"
+                  >
+                    {detailedHour}
+                  </Badge>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        </AnimatePresence>
+      </div>
     </div>
   );
 }

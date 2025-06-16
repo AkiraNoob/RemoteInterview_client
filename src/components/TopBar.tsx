@@ -1,12 +1,18 @@
 import { AvatarImage } from "@radix-ui/react-avatar";
-import { ChevronDown, ChevronsRight } from "lucide-react";
+import {
+  CalendarCheck,
+  ChevronDown,
+  ChevronsRight,
+  UserRound,
+} from "lucide-react";
 import JobsSearchInput from "./JobsSearchInput";
+import Notifications from "./Notifications";
 import { Avatar } from "./ui/avatar";
+import { Button } from "./ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
@@ -28,6 +34,7 @@ export default function TopBar({
       </div>
       {withSearch && <JobsSearchInput className="my-2 border-none" />}
       <div className="flex items-center gap-4 shrink-0">
+        <Notifications />
         <ProfileDropdownMenu />
         <Separator orientation="vertical" className="!h-10 bg-c-text-dark" />
         <div className="text-c-text-dark">
@@ -55,12 +62,32 @@ export const ProfileDropdownMenu = () => {
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuLabel>My Account</DropdownMenuLabel>
+        <div className="flex gap-4 p-2 items-center">
+          <Avatar className="h-[46px] w-[46px] relative">
+            <AvatarImage src="/avatar.jpg" width={46} height={46} />
+          </Avatar>
+          <div>
+            <p className="text-lg font-semibold">Nguyễn Đức Phương</p>
+            <p className="text-sm font-normal text-c-text-light/80">
+              21521307@gm.uit.edu.vn
+            </p>
+          </div>
+        </div>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>Profile</DropdownMenuItem>
-        <DropdownMenuItem>Billing</DropdownMenuItem>
-        <DropdownMenuItem>Team</DropdownMenuItem>
-        <DropdownMenuItem>Subscription</DropdownMenuItem>
+        <DropdownMenuItem>
+          <UserRound />
+          Trang cá nhân
+        </DropdownMenuItem>
+        <DropdownMenuItem>
+          <CalendarCheck />
+          Lịch phỏng vấn
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <div className="w-full">
+          <Button className="w-full" variant={"ghost"}>
+            Đăng xuất
+          </Button>
+        </div>
       </DropdownMenuContent>
     </DropdownMenu>
   );

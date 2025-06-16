@@ -2,21 +2,20 @@
 
 import React, { useEffect, useState } from "react";
 import { Button } from "~/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "~/components/ui/dropdown-menu";
-import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
-import { Textarea } from "~/components/ui/textarea";
-import { cn } from "~/lib/utils";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid"; // Use UUID to generate event IDs
 import SelectDate from "~/components/schedule/_components/add-event-components/select-date";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select";
 import { useModal } from "~/context/modal-context";
 import { useScheduler } from "~/context/schedular-provider";
 import { Event, EventFormData, Variant, eventSchema } from "~/types/index";
@@ -144,27 +143,20 @@ export default function AddEventModal({
       ) : (
         <>
           <div className="grid gap-2">
-            <Label htmlFor="title">Tên sự kiện</Label>
-            <Input
-              id="title"
-              {...register("title")}
-              placeholder="Tên sự kiện"
-              className={cn(errors.title && "border-red-500")}
-            />
-            {errors.title && (
-              <p className="text-sm text-red-500">
-                {errors.title.message as string}
-              </p>
-            )}
-          </div>
-
-          <div className="grid gap-2">
-            <Label htmlFor="description">Mô tả</Label>
-            <Textarea
-              id="description"
-              {...register("description")}
-              placeholder="Mô tả"
-            />
+            <Label htmlFor="title">Bài tuyển dụng liên quan</Label>
+            <Select>
+              <SelectTrigger className={`w-full`}>
+                <SelectValue placeholder="Chọn một bài tuyển dụng" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="1">Bài tuyển dụng 1</SelectItem>
+                  <SelectItem value="2">Bài tuyển dụng 2</SelectItem>
+                  <SelectItem value="3">Bài tuyển dụng 3</SelectItem>
+                  <SelectItem value="4">Bài tuyển dụng 4</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
           </div>
 
           <SelectDate
@@ -174,44 +166,6 @@ export default function AddEventModal({
             }}
             setValue={setValue}
           />
-
-          <div className="grid gap-2">
-            <Label>Màu sắc</Label>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant={getButtonVariant(selectedColor)}
-                  className="w-fit my-2"
-                >
-                  {
-                    colorOptions.find((color) => color.key === selectedColor)
-                      ?.name
-                  }
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                {colorOptions.map((color) => (
-                  <DropdownMenuItem
-                    key={color.key}
-                    onClick={() => {
-                      setSelectedColor(color.key);
-                      setValue("variant", getEventStatus(color.key));
-                    }}
-                  >
-                    <div className="flex items-center">
-                      <div
-                        style={{
-                          backgroundColor: `var(--${color.key})`,
-                        }}
-                        className={`w-4 h-4 rounded-full mr-2`}
-                      />
-                      {color.name}
-                    </div>
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
 
           <div className="flex justify-end space-x-2 mt-4 pt-2 border-t">
             <Button variant="outline" type="button" onClick={() => setClose()}>

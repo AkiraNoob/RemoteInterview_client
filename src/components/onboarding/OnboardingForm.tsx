@@ -24,7 +24,7 @@ export default function OnboardingForm(props: ComponentPropsWithoutRef<"div">) {
     <div
       {...props}
       className={cn(
-        "space-y-10 border rounded-lg flex flex-col py-5 px-10 min-w-[800px] h-fit bg-white/50",
+        "space-y-10 border rounded-lg flex flex-col py-5 px-10 min-w-[800px] h-fit bg-white",
         props.className
       )}
     >
@@ -118,9 +118,7 @@ export default function OnboardingForm(props: ComponentPropsWithoutRef<"div">) {
         )}
       </div>
       <div className="flex justify-end items-center gap-4">
-        <Button variant={"custom"} className="text-lg">
-          Hoàn thiện
-        </Button>
+        <Button variant={"custom"}>Xong</Button>
       </div>
     </div>
   );
