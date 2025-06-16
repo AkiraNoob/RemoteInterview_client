@@ -1,0 +1,47 @@
+import { Box, MapPin, UsersRound } from "lucide-react";
+import { ComponentPropsWithoutRef } from "react";
+import { cn } from "~/lib/utils";
+import CompanyLogo from "./ui/company-logo";
+
+export default function CompanyDescription(
+  props: ComponentPropsWithoutRef<"div">
+) {
+  return (
+    <div
+      {...props}
+      className={cn("p-5 bg-white rounded-lg space-y-3 h-fit", props.className)}
+    >
+      <div className="flex gap-5">
+        <CompanyLogo src="/logo_title.png" className="w-[88px] h-[88px]" />
+        <p className="text-xl font-semibold uppercase">
+          công ty cổ phần abcxyz
+        </p>
+      </div>
+      <div className="space-y-2">
+        <div className="flex gap-4">
+          <div className="w-[100px] flex items-center text-other_helper_text gap-2 flex-shrink-0">
+            <UsersRound size={18} />
+            <span>Quy mô:</span>
+          </div>
+          <span>123 nhân viên</span>
+        </div>
+
+        <div className="flex gap-4">
+          <div className="w-[100px] flex items-center gap-2 flex-shrink-0 text-other_helper_text">
+            <Box size={18} />
+            <span>Lĩnh vực:</span>
+          </div>
+          <span>123 nhân viên</span>
+        </div>
+
+        <div className="flex gap-4">
+          <div className="w-[100px] flex items-center h-fit gap-2 flex-shrink-0 text-other_helper_text">
+            <MapPin size={18} />
+            <span>Địa điểm:</span>
+          </div>
+          <span>x Đường A, phường B, quận C, TP. Hồ Chí Minh</span>
+        </div>
+      </div>
+    </div>
+  );
+}
