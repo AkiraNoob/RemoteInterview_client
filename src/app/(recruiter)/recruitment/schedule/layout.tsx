@@ -1,9 +1,7 @@
-import { SchedulerProvider } from "~/context/schedular-provider";
+import DecoratedSchedularProvider from "~/components/schedule/provider/DecoratedSchedularProvider";
 
 export default function Layout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  return (
-    <SchedulerProvider weekStartsOn="monday">{children}</SchedulerProvider>
-  );
+  return <DecoratedSchedularProvider>{children}</DecoratedSchedularProvider>;
 }

@@ -95,12 +95,14 @@ export default function WeeklyView({
   CustomEventComponent,
   CustomEventModal,
   classNames,
+  enableAddEvent,
 }: {
   prevButton?: React.ReactNode;
   nextButton?: React.ReactNode;
   CustomEventComponent?: React.FC<Event>;
   CustomEventModal?: CustomEventModal;
   classNames?: { prev?: string; next?: string; addEvent?: string };
+  enableAddEvent?: boolean;
 }) {
   const { getters, handlers } = useScheduler();
   const hoursColumnRef = useRef<HTMLDivElement>(null);
@@ -571,10 +573,11 @@ export default function WeeklyView({
                                         className="mt-4"
                                         onClick={() => {
                                           setOpen(null);
-                                          handleAddEventWeek(
-                                            idx,
-                                            detailedHour || "12:00 PM"
-                                          );
+                                          enableAddEvent &&
+                                            handleAddEventWeek(
+                                              idx,
+                                              detailedHour || "12:00 PM"
+                                            );
                                         }}
                                       >
                                         Thêm sự kiện
@@ -666,7 +669,8 @@ export default function WeeklyView({
                       key={`day-${dayIndex}`}
                       className="col-span-1 border-default-200 z-20 relative transition duration-300 cursor-pointer border-r border-b text-center text-sm text-muted-foreground overflow-hidden"
                       onClick={() => {
-                        handleAddEventWeek(dayIndex, detailedHour as string);
+                        enableAddEvent &&
+                          handleAddEventWeek(dayIndex, detailedHour as string);
                       }}
                     >
                       <AnimatePresence initial={false}>
@@ -782,16 +786,17 @@ export default function WeeklyView({
                       </AnimatePresence>
 
                       {/* Render hour slots */}
-                      {Array.from({ length: 24 }, (_, hourIndex) => (
-                        <div
-                          key={`day-${dayIndex}-hour-${hourIndex}`}
-                          className="col-span-1 border-default-200 h-[64px] relative transition duration-300 cursor-pointer border-r border-b text-center text-sm text-muted-foreground"
-                        >
-                          <div className="absolute bg-accent z-40 flex items-center justify-center text-xs opacity-0 transition duration-250 hover:opacity-100 w-full h-full">
-                            Thêm sự kiện
+                      {enableAddEvent &&
+                        Array.from({ length: 24 }, (_, hourIndex) => (
+                          <div
+                            key={`day-${dayIndex}-hour-${hourIndex}`}
+                            className="col-span-1 border-default-200 h-[64px] relative transition duration-300 cursor-pointer border-r border-b text-center text-sm text-muted-foreground"
+                          >
+                            <div className="absolute bg-accent z-40 flex items-center justify-center text-xs opacity-0 transition duration-250 hover:opacity-100 w-full h-full">
+                              Thêm sự kiện
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        ))}
                     </div>
                   );
                 })}

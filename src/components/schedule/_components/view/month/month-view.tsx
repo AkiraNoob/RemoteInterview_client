@@ -37,12 +37,14 @@ export default function MonthView({
   CustomEventComponent,
   CustomEventModal,
   classNames,
+  enableAddEvent,
 }: {
   prevButton?: React.ReactNode;
   nextButton?: React.ReactNode;
   CustomEventComponent?: React.FC<Event>;
   CustomEventModal?: CustomEventModal;
   classNames?: { prev?: string; next?: string; addEvent?: string };
+  enableAddEvent?: boolean;
 }) {
   const { getters, weekStartsOn } = useScheduler();
   const { setOpen } = useModal();
@@ -266,7 +268,7 @@ export default function MonthView({
                 >
                   <Card
                     className="shadow-md cursor-pointer overflow-hidden relative flex p-4 border h-full"
-                    onClick={() => handleAddEvent(dayObj.day)}
+                    onClick={() => enableAddEvent && handleAddEvent(dayObj.day)}
                   >
                     <div
                       className={clsx(
@@ -321,7 +323,7 @@ export default function MonthView({
                     </div>
 
                     {/* Hover Text */}
-                    {dayEvents.length === 0 && (
+                    {enableAddEvent && dayEvents.length === 0 && (
                       <div className="absolute inset-0 bg-primary/20 bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                         <span className="text-black tracking-tighter text-lg font-semibold">
                           Thêm sự kiện

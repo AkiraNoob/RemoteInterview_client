@@ -1,4 +1,8 @@
-import { ExternalLink, Info, Search } from "lucide-react";
+"use client";
+
+import dayjs from "dayjs";
+import { ExternalLink, Search } from "lucide-react";
+import Link from "next/link";
 import {
   Table,
   TableBody,
@@ -7,11 +11,22 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
+import { PATH_NAME } from "~/constants/pathName";
+import cookieCommons from "~/helpers/cookieCommon";
+import useGetListRecruitmentOfAUser from "~/hook/useGetListRecruitmentOfAUser";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 export default function RecruitmentControlledTable() {
+  const {
+    query: { data },
+  } = useGetListRecruitmentOfAUser({
+    data: {
+      employerId: cookieCommons.getUserId() as string,
+      pageSize: 100,
+    },
+  });
+
   return (
     <>
       <div className="flex-1 flex items-center gap-2 pl-1 pr-4 bg-white rounded-lg">
@@ -28,7 +43,7 @@ export default function RecruitmentControlledTable() {
             <TableHead>Tiêu đề tuyển dụng</TableHead>
             <TableHead>Ngày hết hạn</TableHead>
             <TableHead>Số lượng CV ứng tuyển</TableHead>
-            <TableHead className="flex items-center gap-1">
+            {/* <TableHead className="flex items-center gap-1">
               Hiệu suất
               <Tooltip>
                 <TooltipContent>
@@ -38,26 +53,37 @@ export default function RecruitmentControlledTable() {
                   <Info size={14} />
                 </TooltipTrigger>
               </Tooltip>
-            </TableHead>
+            </TableHead>  */}
             <TableHead className="text-center">Báo cáo chi tiết</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          <TableRow>
-            <TableCell className="font-medium">Tiêu đề</TableCell>
-            <TableCell>dd/mm/yyyy</TableCell>
-            <TableCell>14</TableCell>
-            <TableCell>74%</TableCell>
-            <TableCell className="flex items-center">
-              <Button
-                variant={"custom"}
-                size={"icon"}
-                className="mx-auto rounded-full bg-transparent border border-c-primary hover:border-none text-c-primary hover:text-white"
-              >
-                <ExternalLink size={20} />
-              </Button>
-            </TableCell>
-          </TableRow>
+          {data?.data.map((item) => (
+            <TableRow>
+              <TableCell className="font-medium">{item.title}</TableCell>
+              <TableCell>
+                {dayjs(item.timeStamp).format("dd/mm/yyyy")}
+              </TableCell>
+              <TableCell>{item.numberOfApplicant}</TableCell>
+              {/* <TableCell>74%</TableCell> */}
+              <TableCell className="flex items-center">
+                <Link
+                  href={PATH_NAME.RECRUITER_RECRUITMENT_DETAIL.replace(
+                    "[rid]",
+                    item.id
+                  )}
+                >
+                  <Button
+                    variant={"custom"}
+                    size={"icon"}
+                    className="mx-auto rounded-full bg-transparent border border-c-primary hover:border-none text-c-primary hover:text-white"
+                  >
+                    <ExternalLink size={20} />
+                  </Button>
+                </Link>
+              </TableCell>
+            </TableRow>
+          ))}
         </TableBody>
       </Table>
     </>

@@ -1,6 +1,6 @@
 import TopBar from "~/components/TopBar";
 
-export default function LayoutWSearchTopBar({
+export default async function LayoutWSearchTopBar({
   children,
 }: Readonly<{
   children: React.ReactNode;

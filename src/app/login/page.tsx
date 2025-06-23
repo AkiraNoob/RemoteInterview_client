@@ -2,6 +2,7 @@ import LoginForm from "~/components/LoginForm";
 import RegisterForm from "~/components/RegisterForm";
 import LoginPageIllustration from "~/components/illustration/LoginPageIllustration";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import { PATH_NAME } from "~/constants/pathName";
 
 const LoginPage = () => {
   return (
@@ -32,11 +33,13 @@ const LoginPage = () => {
       </div>
       <div className="shrink-0 px-[100px] flex flex-col gap-10 pt-5 items-center  bg-white">
         <div className="flex items-center justify-center">
-          <img
-            src="/large_logo_w_text_orange.png"
-            alt="logo"
-            className="h-[80px]"
-          />
+          <a href={PATH_NAME.HOME}>
+            <img
+              src="/large_logo_w_text_orange.png"
+              alt="logo"
+              className="h-[80px]"
+            />
+          </a>
         </div>
         <div className="mt-[50px] space-y-20">
           <p className="text-3xl font-semibold italic text-c-primary text-center">

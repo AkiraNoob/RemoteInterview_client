@@ -21,7 +21,7 @@ export default function CompanyProfileDescription() {
             overflowY: "hidden",
           }}
           ref={contentRef}
-          className="relative whitespace-pre-line break-word-legacy transition-all ease-linear"
+          className="relative whitespace-pre-line break-word-legacy transition-all ease-linear list-class"
         >
           Với hơn 14 năm xây dựng và phát triển, CMC Telecom tự hào nằm trong
           TOP 4 nhà cung cấp dịch vụ Viễn thông hàng đầu Việt Nam và được vinh

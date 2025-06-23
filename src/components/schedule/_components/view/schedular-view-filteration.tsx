@@ -200,6 +200,7 @@ export default function SchedulerViewFilteration({
                 <AnimatePresence mode="wait">
                   <motion.div {...animationConfig}>
                     <DailyView
+                      enableAddEvent={enableAddEvent}
                       stopDayEventSummary={stopDayEventSummary}
                       classNames={classNames?.buttons}
                       prevButton={

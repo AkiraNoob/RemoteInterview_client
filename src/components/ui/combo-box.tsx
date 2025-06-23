@@ -28,7 +28,7 @@ export function ComboBox({
   buttonPlaceholder: string;
   emptyText: string;
   value: string;
-  setValue: React.Dispatch<React.SetStateAction<string>>;
+  setValue: (value: string) => void;
 }) {
   const [open, setOpen] = React.useState(false);
 
@@ -61,6 +61,7 @@ export function ComboBox({
                 ? "--Không có dữ liệu--"
                 : data.map((item) => (
                     <CommandItem
+                      keywords={[item.label]}
                       key={item.value}
                       value={item.value}
                       onSelect={(currentValue) => {

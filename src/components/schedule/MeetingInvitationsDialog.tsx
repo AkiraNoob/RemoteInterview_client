@@ -1,7 +1,14 @@
 "use client";
 
+import dayjs from "dayjs";
 import { SquareArrowOutUpRight, XIcon } from "lucide-react";
 import * as React from "react";
+import useGetAllPendingMeetingInvitation from "~/hook/useGetMeetingInvitations";
+import useRespondMeetingInvitation from "~/hook/useRespondMeetingInvitation";
+import {
+  IMeetingInvitationDTO,
+  UserMeetingStatusEnum,
+} from "~/types/meeting.types";
 import { Button } from "../ui/button";
 import { DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
@@ -11,6 +18,8 @@ export default function MeetingInvitationsDialog({
 }: {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
+  const { query } = useGetAllPendingMeetingInvitation({});
+
   return (
     <DialogContent
       showCloseButton={false}
@@ -30,23 +39,33 @@ export default function MeetingInvitationsDialog({
         </Button>
       </DialogHeader>
       <div className="space-y-3">
-        {new Array(10).fill(0).map((item, index) => (
-          <MeetingInvitation key={index} />
+        {query.data?.map((item, index) => (
+          <MeetingInvitation key={index} item={item} />
         ))}
       </div>
     </DialogContent>
   );
 }
 
-function MeetingInvitation() {
+function MeetingInvitation({ item }: { item: IMeetingInvitationDTO }) {
+  const {
+    mutation: { mutate, isPending },
+  } = useRespondMeetingInvitation({});
+  const [state, setState] = React.useState<UserMeetingStatusEnum | null>(null);
+
   return (
     <div className="flex w-full px-3 pb-3 border-b">
       <div className="flex-1">
-        <p className="text-2xl font-semibold">Tiêu đề tuyển dụng</p>
-        <p className="text-lg font-normal">Tên công ty</p>
+        <p className="text-2xl font-semibold">{item.recruitmentTitle}</p>
+        <p className="text-lg font-normal">{item.employerName}</p>
         <p>
           <span className="font-semibold">Thời gian:</span>{" "}
-          <span>10:30 dd/mm/yyyy</span>
+          <span>
+            Từ {dayjs(item.startTime).format("HH:mm DD:MM:YYYY")} đến{" "}
+            {!item.endTime
+              ? "Không rõ"
+              : dayjs(item.endTime).format("HH:mm DD:MM:YYYY")}
+          </span>
         </p>
         <p className="text-sm italic text-other_helper_text">
           Thời gian trên không phù hợp với bạn?{" "}
@@ -65,8 +84,34 @@ function MeetingInvitation() {
             </Button>
           </TooltipTrigger>
         </Tooltip>
-        <Button variant={"success"}>Chấp nhận</Button>
-        <Button variant={"error"}>Từ chối</Button>
+        <Button
+          loading={isPending && state === UserMeetingStatusEnum.Accepted}
+          disabled={isPending}
+          onClick={() => {
+            setState(UserMeetingStatusEnum.Accepted);
+            mutate({
+              invitationId: item.id,
+              status: UserMeetingStatusEnum.Accepted,
+            });
+          }}
+          variant={"success"}
+        >
+          Chấp nhận
+        </Button>
+        <Button
+          loading={isPending && state === UserMeetingStatusEnum.Rejected}
+          disabled={isPending}
+          onClick={() => {
+            setState(UserMeetingStatusEnum.Rejected);
+            mutate({
+              invitationId: item.id,
+              status: UserMeetingStatusEnum.Rejected,
+            });
+          }}
+          variant={"error"}
+        >
+          Từ chối
+        </Button>
       </div>
     </div>
   );

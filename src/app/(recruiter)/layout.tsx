@@ -2,7 +2,7 @@ import Notifications from "~/components/Notifications";
 import { ProfileDropdownMenu } from "~/components/TopBar";
 import RecruitmentSideBar from "~/components/recruiter-component/RecruitmentSideBar";
 
-export default function Layout({
+export default async function Layout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (

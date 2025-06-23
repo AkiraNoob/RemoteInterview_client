@@ -11,6 +11,10 @@ import { Button } from "~/components/ui/button";
 import CustomModal from "~/components/ui/custom-modal";
 import { useModal } from "~/context/modal-context";
 import { useScheduler } from "~/context/schedular-provider";
+import useGetListMeeting, {
+  convertDtoToEvent,
+  convertEventToDto,
+} from "~/hook/useGetListMeeting";
 import { CustomEventModal, Event } from "~/types";
 import EventStyled from "../event-component/event-styled";
 
@@ -156,6 +160,7 @@ export default function DailyView({
   CustomEventModal,
   stopDayEventSummary,
   classNames,
+  enableAddEvent,
 }: {
   prevButton?: React.ReactNode;
   nextButton?: React.ReactNode;
@@ -163,6 +168,7 @@ export default function DailyView({
   CustomEventModal?: CustomEventModal;
   stopDayEventSummary?: boolean;
   classNames?: { prev?: string; next?: string; addEvent?: string };
+  enableAddEvent?: boolean;
 }) {
   const hoursColumnRef = useRef<HTMLDivElement>(null);
   const [detailedHour, setDetailedHour] = useState<string | null>(null);
@@ -171,6 +177,25 @@ export default function DailyView({
   const [direction, setDirection] = useState<number>(0);
   const { setOpen } = useModal();
   const { getters, handlers } = useScheduler();
+
+  const {
+    query: { data, isFetched },
+  } = useGetListMeeting({
+    data: (() => {
+      const startOfDay = new Date(currentDate);
+      startOfDay.setHours(0, 0, 0, 0); // 00:00:00.000
+
+      const endOfDay = new Date(currentDate);
+      endOfDay.setHours(23, 59, 59, 999); // 23:59:59.999
+
+      const response = {
+        startTime: startOfDay.toISOString(),
+        endTime: endOfDay.toISOString(),
+      };
+
+      return response;
+    })(),
+  });
 
   const handleMouseMove = useCallback(
     (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -222,6 +247,7 @@ export default function DailyView({
           CustomAddEventModal={
             CustomEventModal?.CustomAddEventModal?.CustomForm
           }
+          populatedData={!!event ? convertEventToDto(event) : undefined}
         />
       </CustomModal>,
       async () => {
@@ -275,6 +301,8 @@ export default function DailyView({
       title: "",
       id: "",
       variant: "primary",
+      recruitmentId: "",
+      description: "",
     });
   }
 
@@ -344,8 +372,8 @@ export default function DailyView({
             {!stopDayEventSummary && (
               <div className="all-day-events">
                 <AnimatePresence initial={false}>
-                  {dayEvents && dayEvents?.length
-                    ? dayEvents?.map((event, eventIndex) => {
+                  {data && data?.length
+                    ? data?.map((event, eventIndex) => {
                         return (
                           <motion.div
                             key={event.id}
@@ -357,10 +385,11 @@ export default function DailyView({
                           >
                             <EventStyled
                               event={{
-                                ...event,
+                                ...convertDtoToEvent(event),
                                 CustomEventComponent,
                                 minmized: false,
                               }}
+                              data={event}
                               CustomEventModal={CustomEventModal}
                             />
                           </motion.div>
@@ -393,22 +422,23 @@ export default function DailyView({
                   ))}
                 </div>
                 <div className="flex relative flex-grow flex-col ">
-                  {Array.from({ length: 24 }).map((_, index) => (
-                    <div
-                      onClick={() => {
-                        handleAddEventDay(detailedHour as string);
-                      }}
-                      key={`hour-${index}`}
-                      className="cursor-pointer w-full relative border-b  hover:bg-default-200/50  transition duration-300  p-4 h-[64px] text-left text-sm text-muted-foreground border-default-200"
-                    >
-                      <div className="absolute bg-accent flex items-center justify-center text-xs opacity-0 transition left-0 top-0 duration-250 hover:opacity-100 w-full h-full">
-                        Add Event
+                  {enableAddEvent &&
+                    Array.from({ length: 24 }).map((_, index) => (
+                      <div
+                        onClick={() => {
+                          handleAddEventDay(detailedHour as string);
+                        }}
+                        key={`hour-${index}`}
+                        className="cursor-pointer w-full relative border-b  hover:bg-default-200/50  transition duration-300  p-4 h-[64px] text-left text-sm text-muted-foreground border-default-200"
+                      >
+                        <div className="absolute bg-accent flex items-center justify-center text-xs opacity-0 transition left-0 top-0 duration-250 hover:opacity-100 w-full h-full">
+                          Thêm sự kiện
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
                   <AnimatePresence initial={false}>
-                    {dayEvents && dayEvents?.length
-                      ? dayEvents?.map((event, eventIndex) => {
+                    {data && data?.length
+                      ? data?.map((event, eventIndex) => {
                           // Find which time group this event belongs to
                           let eventsInSamePeriod = 1;
                           let periodIndex = 0;
@@ -431,11 +461,15 @@ export default function DailyView({
                             minWidth,
                             top,
                             zIndex,
-                          } = handlers.handleEventStyling(event, dayEvents, {
-                            eventsInSamePeriod,
-                            periodIndex,
-                            adjustForPeriod: true,
-                          });
+                          } = handlers.handleEventStyling(
+                            convertDtoToEvent(event),
+                            dayEvents,
+                            {
+                              eventsInSamePeriod,
+                              periodIndex,
+                              adjustForPeriod: true,
+                            }
+                          );
                           return (
                             <motion.div
                               key={event.id}
@@ -455,8 +489,9 @@ export default function DailyView({
                               transition={{ duration: 0.2 }}
                             >
                               <EventStyled
+                                data={event}
                                 event={{
-                                  ...event,
+                                  ...convertDtoToEvent(event),
                                   CustomEventComponent,
                                   minmized: true,
                                 }}

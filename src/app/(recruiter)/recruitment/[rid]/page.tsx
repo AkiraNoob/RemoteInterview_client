@@ -13,7 +13,7 @@ import { Breadcrumb } from "~/components/ui/breadcrumb";
 export default function Page() {
   return (
     <div className="max-w-[1300px] w-full mx-auto space-y-4 pt-5">
-      <Breadcrumb>
+      <Breadcrumb className="">
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink href="/recruitment">Tuyển dụng</BreadcrumbLink>

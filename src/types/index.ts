@@ -11,10 +11,11 @@ export type IconSvgProps = SVGProps<SVGSVGElement> & {
 export interface Event {
   id: string;
   title: string;
-  description?: string;
+  description: string;
   startDate: Date;
   endDate: Date;
   variant?: Variant;
+  recruitmentId: string;
 }
 
 // Define the state interface for the scheduler
@@ -29,17 +30,14 @@ export type Action =
   | { type: "UPDATE_EVENT"; payload: Event }
   | { type: "SET_EVENTS"; payload: Event[] };
 
-
-  
-
 // Define handlers interface
 export interface Handlers {
   handleEventStyling: (
     event: Event,
     dayEvents: Event[],
-    periodOptions?: { 
-      eventsInSamePeriod?: number; 
-      periodIndex?: number; 
+    periodOptions?: {
+      eventsInSamePeriod?: number;
+      periodIndex?: number;
       adjustForPeriod?: boolean;
     }
   ) => {
@@ -90,7 +88,8 @@ export type Variant = (typeof variants)[number];
 // Define Zod schema for form validation
 export const eventSchema = z.object({
   title: z.string().nonempty("Event name is required"),
-  description: z.string().optional(),
+  description: z.string(),
+  recruitmentId: z.string(),
   startDate: z.date(),
   endDate: z.date(),
   variant: z.enum(["primary", "danger", "success", "warning", "default"]),

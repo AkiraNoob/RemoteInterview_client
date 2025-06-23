@@ -7,8 +7,10 @@ import { Button } from "~/components/ui/button";
 import CustomModal from "~/components/ui/custom-modal";
 import { useModal } from "~/context/modal-context";
 import { useScheduler } from "~/context/schedular-provider";
+import { convertDtoToEvent } from "~/hook/useGetListMeeting";
 import { cn } from "~/lib/utils";
 import { CustomEventModal, Event } from "~/types";
+import { IMeetingListItemDTO } from "~/types/meeting.types";
 
 // Function to format date
 const formatDate = (date: Date) => {
@@ -64,10 +66,12 @@ export default function EventStyled({
   event,
   onDelete,
   CustomEventModal,
+  data,
 }: {
   event: EventStyledProps;
   CustomEventModal?: CustomEventModal;
   onDelete?: (id: string) => void;
+  data: IMeetingListItemDTO;
 }) {
   const { setOpen } = useModal();
   const { handlers } = useScheduler();
@@ -85,6 +89,7 @@ export default function EventStyled({
           CustomAddEventModal={
             CustomEventModal?.CustomAddEventModal?.CustomForm
           }
+          populatedData={data}
         />
       </CustomModal>,
       async () => {
@@ -131,14 +136,7 @@ export default function EventStyled({
         <div
           onClick={(e: React.MouseEvent<HTMLDivElement>) => {
             e.stopPropagation();
-            handleEditEvent({
-              id: event?.id,
-              title: event?.title,
-              startDate: event?.startDate,
-              endDate: event?.endDate,
-              description: event?.description,
-              variant: event?.variant,
-            });
+            handleEditEvent(convertDtoToEvent(data));
           }}
         >
           <event.CustomEventComponent {...event} />
@@ -147,14 +145,7 @@ export default function EventStyled({
         <div
           onClick={(e: React.MouseEvent<HTMLDivElement>) => {
             e.stopPropagation();
-            handleEditEvent({
-              id: event?.id,
-              title: event?.title,
-              startDate: event?.startDate,
-              endDate: event?.endDate,
-              description: event?.description,
-              variant: event?.variant,
-            });
+            handleEditEvent(convertDtoToEvent(data));
           }}
           className={cn(
             "w-full p-2 rounded",

@@ -1,9 +1,20 @@
 "use client";
 
-import { EditorState } from "draft-js";
+import { useMutation } from "@tanstack/react-query";
+import { convertToHTML } from "draft-convert";
+import { ContentState, EditorState, convertFromHTML } from "draft-js";
 import { ChevronDownIcon, XIcon } from "lucide-react";
 import * as React from "react";
 import { Editor } from "react-draft-wysiwyg";
+import { toast } from "sonner";
+import {
+  postCreateRecruitment,
+  putUpdateRecruitment,
+} from "~/api/recruitments";
+import { concatAddress } from "~/helpers/stringHelper";
+import useGetProfessions from "~/hook/useGetProfessions";
+import useRecruitmentDetail from "~/hook/useRecruitmentDetail";
+import { IMutateRecruitmentRequest } from "~/types/recruitment.types";
 import "../../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { province } from "../../data/province_data";
 import { Button } from "../ui/button";
@@ -18,15 +29,32 @@ import {
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 export default function RecruitmentModal({
   setOpen,
+  recruitmentId,
 }: {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  recruitmentId?: string;
 }) {
+  const [title, setTitle] = React.useState<string>("");
   const [provinceCode, setProvinceCode] = React.useState<string>("");
   const [districtCode, setDistrictCode] = React.useState<string>("");
+  const [address, setAddress] = React.useState<string>("");
+  const [minExperience, setMinExperience] = React.useState<string>("");
+  const [maxSalary, setMaxSalary] = React.useState<string>("");
+  const [professionId, setProfessionId] = React.useState<string>("");
 
+  // const [motivateionEditorState, setMotivateionEditorState] =
+  //   React.useState<EditorState>(EditorState.createEmpty());
   const [descriptionEditorState, setDescriptionEditorState] =
     React.useState<EditorState>(EditorState.createEmpty());
   const [requirementEditorState, setRequirementEditorState] =
@@ -36,6 +64,107 @@ export default function RecruitmentModal({
 
   const [openCalendar, setOpenCalendar] = React.useState(false);
   const [date, setDate] = React.useState<Date | undefined>(undefined);
+
+  const disabledCondition =
+    !title ||
+    !provinceCode ||
+    !districtCode ||
+    !address ||
+    !minExperience ||
+    !maxSalary ||
+    !date ||
+    !professionId ||
+    // !convertToHTML(motivateionEditorState.getCurrentContent()) ||
+    !convertToHTML(descriptionEditorState.getCurrentContent()) ||
+    !convertToHTML(requirementEditorState.getCurrentContent()) ||
+    !convertToHTML(welfareEditorState.getCurrentContent());
+
+  const {
+    query: { data: recruitmentDetail },
+  } = useRecruitmentDetail({
+    recruitmentId: recruitmentId,
+  });
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: !recruitmentId
+      ? postCreateRecruitment
+      : async (data: IMutateRecruitmentRequest) =>
+          await putUpdateRecruitment(recruitmentId, data),
+    onSuccess(data, variables, context) {
+      setOpen(false);
+    },
+    onError() {
+      toast("Có lỗi xảy ra");
+    },
+  });
+
+  React.useEffect(() => {
+    if (recruitmentDetail) {
+      setProvinceCode(recruitmentDetail?.provinceId.toString());
+      setDistrictCode(recruitmentDetail?.districtId.toString());
+
+      // {
+      //   const blocksFromHTML = convertFromHTML(recruitmentDetail.motivation);
+      //   const contentState = ContentState.createFromBlockArray(
+      //     blocksFromHTML.contentBlocks,
+      //     blocksFromHTML.entityMap
+      //   );
+      //   setMotivateionEditorState(EditorState.createWithContent(contentState));
+      // }
+
+      {
+        const blocksFromHTML = convertFromHTML(recruitmentDetail.description);
+        const contentState = ContentState.createFromBlockArray(
+          blocksFromHTML.contentBlocks,
+          blocksFromHTML.entityMap
+        );
+        setDescriptionEditorState(EditorState.createWithContent(contentState));
+      }
+
+      {
+        const blocksFromHTML = convertFromHTML(recruitmentDetail.requirement);
+        const contentState = ContentState.createFromBlockArray(
+          blocksFromHTML.contentBlocks,
+          blocksFromHTML.entityMap
+        );
+        setRequirementEditorState(EditorState.createWithContent(contentState));
+      }
+
+      {
+        const blocksFromHTML = convertFromHTML(recruitmentDetail.welfare);
+        const contentState = ContentState.createFromBlockArray(
+          blocksFromHTML.contentBlocks,
+          blocksFromHTML.entityMap
+        );
+        setWelfareEditorState(EditorState.createWithContent(contentState));
+      }
+
+      setDate(new Date(recruitmentDetail.expiredData));
+      setAddress(recruitmentDetail.address);
+      setMinExperience(recruitmentDetail.minExperience.toString());
+      setMaxSalary(recruitmentDetail.maxSalary.toString());
+    }
+  }, [recruitmentDetail]);
+
+  const onSubmit = () => {
+    mutate({
+      title: title,
+      // motivation: convertToHTML(motivateionEditorState.getCurrentContent()),
+      description: convertToHTML(descriptionEditorState.getCurrentContent()),
+      requirement: convertToHTML(requirementEditorState.getCurrentContent()),
+      welfare: convertToHTML(welfareEditorState.getCurrentContent()),
+      address: concatAddress(provinceCode, districtCode, address),
+      minExperience: parseInt(minExperience),
+      maxSalary: parseInt(maxSalary),
+      provinceId: parseInt(provinceCode),
+      districtId: parseInt(districtCode),
+      professionId: professionId,
+    });
+  };
+
+  const {
+    query: { data: professions },
+  } = useGetProfessions({});
 
   return (
     <DialogContent
@@ -56,7 +185,11 @@ export default function RecruitmentModal({
       <div className="space-y-5">
         <div className="space-y-1">
           <Label className="text-lg">Tiêu đề</Label>
-          <Input placeholder="Tiêu đề tuyển dụng *" />
+          <Input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Tiêu đề tuyển dụng *"
+          />
         </div>
         <div className="space-y-1">
           <Label className="text-lg">Mô tả</Label>
@@ -99,7 +232,11 @@ export default function RecruitmentModal({
         </div>
         <div className="space-y-1">
           <Label className="text-lg">Địa chỉ</Label>
-          <Input placeholder="Địa chỉ làm việc" />
+          <Input
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+            placeholder="Địa chỉ làm việc"
+          />
           <div className="flex items-center gap-2 mt-2">
             <ComboBox
               className="flex-1"
@@ -130,12 +267,42 @@ export default function RecruitmentModal({
           </div>
         </div>
         <div className="space-y-1">
+          <Label className="text-lg">Nghề nghiệp</Label>
+          <Select
+            value={professionId}
+            onValueChange={(value) => setProfessionId(value)}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Chọn 01 ngành nghề *" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {professions?.map((item) => (
+                  <SelectItem value={item.id} key={item.id}>
+                    {item.name}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-1">
           <Label className="text-lg">Kinh nghiệm tối thiểu</Label>
-          <Input placeholder="Kinh nghiệm yêu cầu tối thiểu *" type="number" />
+          <Input
+            value={minExperience}
+            onChange={(e) => setMinExperience(e.target.value)}
+            placeholder="Kinh nghiệm yêu cầu tối thiểu *"
+            type="number"
+          />
         </div>
         <div className="space-y-1">
           <Label className="text-lg">Mức lương tối đa</Label>
-          <Input placeholder="Mức lương tối đa có thể trả *" type="number" />
+          <Input
+            value={maxSalary}
+            onChange={(e) => setMaxSalary(e.target.value)}
+            placeholder="Mức lương tối đa có thể trả *"
+            type="number"
+          />
         </div>
         <div className="space-y-1">
           <Label className="text-lg">Thời gian hết hạn</Label>
@@ -168,12 +335,20 @@ export default function RecruitmentModal({
             </Popover>
           </div>
           <p className="italic text-sm text-other_helper_text font-normal">
-            Bài tuyển dụng sẽ khả dụng đến hết ngày được chọn
+            Bài tuyển dụng sẽ khả dụng đến hết ngày được chọn. Nếu không có giá
+            trị, bài tuyển dụng sẽ được mở vĩnh viễn.
           </p>
         </div>
       </div>
       <DialogFooter>
-        <Button variant={"custom"}>Tạo</Button>
+        <Button
+          disabled={disabledCondition}
+          onClick={onSubmit}
+          loading={isPending}
+          variant={"custom"}
+        >
+          {recruitmentId ? "Cập nhật" : "Tạo"}
+        </Button>
       </DialogFooter>
     </DialogContent>
   );

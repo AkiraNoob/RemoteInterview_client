@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { Button } from "~/components/ui/button";
-import { Label } from "~/components/ui/label";
-
 import { zodResolver } from "@hookform/resolvers/zod";
-import { SubmitHandler, useForm } from "react-hook-form";
+import React, { useEffect } from "react";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid"; // Use UUID to generate event IDs
 import SelectDate from "~/components/schedule/_components/add-event-components/select-date";
+import { Button } from "~/components/ui/button";
+import { Input } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -18,24 +18,26 @@ import {
 } from "~/components/ui/select";
 import { useModal } from "~/context/modal-context";
 import { useScheduler } from "~/context/schedular-provider";
-import { Event, EventFormData, Variant, eventSchema } from "~/types/index";
+import cookieCommons from "~/helpers/cookieCommon";
+import useGetListRecruitmentOfAUser from "~/hook/useGetListRecruitmentOfAUser";
+import { Event, EventFormData, eventSchema } from "~/types/index";
+import { IMeetingListItemDTO } from "~/types/meeting.types";
+import { RecruitmentStatusEnum } from "~/types/recruitment.types";
+import InviteToMeetingForm from "../decorations/InviteToMeetingForm";
 
 export default function AddEventModal({
   CustomAddEventModal,
+  populatedData,
 }: {
   CustomAddEventModal?: React.FC<{ register: any; errors: any }>;
+  populatedData?: IMeetingListItemDTO;
 }) {
   const { setClose, data } = useModal();
-
-  const [selectedColor, setSelectedColor] = useState<string>(
-    getEventColor(data?.variant || "primary")
-  );
-
-  const typedData = data as { default: Event };
 
   const { handlers } = useScheduler();
 
   const {
+    control,
     register,
     handleSubmit,
     reset,
@@ -44,95 +46,61 @@ export default function AddEventModal({
   } = useForm<EventFormData>({
     resolver: zodResolver(eventSchema),
     defaultValues: {
-      title: "",
-      description: "",
-      startDate: new Date(),
-      endDate: new Date(),
-      variant: data?.variant || "primary",
-      color: data?.color || "blue",
+      title: populatedData?.title ?? "",
+      description: populatedData?.description ?? "",
+      startDate: populatedData?.startTime
+        ? new Date(populatedData.startTime)
+        : new Date(),
+      endDate: populatedData?.endTime
+        ? new Date(populatedData.endTime)
+        : new Date(),
+      variant: "primary",
+      color: "blue",
+    },
+  });
+
+  const {
+    query: { data: recruitments, isFetched },
+  } = useGetListRecruitmentOfAUser({
+    data: {
+      employerId: cookieCommons.getUserId() as string,
+      status: RecruitmentStatusEnum.Open,
+      pageSize: 100,
     },
   });
 
   // Reset the form on initialization
   useEffect(() => {
-    if (data?.default) {
-      const eventData = data?.default;
-      console.log("eventData", eventData);
+    if (populatedData) {
+      const eventData = populatedData;
       reset({
         title: eventData.title,
         description: eventData.description || "",
-        startDate: eventData.startDate,
-        endDate: eventData.endDate,
-        variant: eventData.variant || "primary",
-        color: eventData.color || "blue",
+        startDate: populatedData?.startTime
+          ? new Date(populatedData.startTime)
+          : new Date(),
+        endDate: populatedData?.endTime
+          ? new Date(populatedData.endTime)
+          : new Date(),
+        variant: "primary",
+        color: "blue",
       });
     }
-  }, [data, reset]);
-
-  const colorOptions = [
-    { key: "blue", name: "Blue" },
-    { key: "red", name: "Red" },
-    { key: "green", name: "Green" },
-    { key: "yellow", name: "Yellow" },
-  ];
-
-  function getEventColor(variant: Variant) {
-    switch (variant) {
-      case "primary":
-        return "blue";
-      case "danger":
-        return "red";
-      case "success":
-        return "green";
-      case "warning":
-        return "yellow";
-      default:
-        return "blue";
-    }
-  }
-
-  function getEventStatus(color: string) {
-    switch (color) {
-      case "blue":
-        return "primary";
-      case "red":
-        return "danger";
-      case "green":
-        return "success";
-      case "yellow":
-        return "warning";
-      default:
-        return "default";
-    }
-  }
-
-  const getButtonVariant = (color: string) => {
-    switch (color) {
-      case "blue":
-        return "default";
-      case "red":
-        return "destructive";
-      case "green":
-        return "success";
-      case "yellow":
-        return "warning";
-      default:
-        return "default";
-    }
-  };
+  }, [populatedData, reset]);
 
   const onSubmit: SubmitHandler<EventFormData> = (formData) => {
     const newEvent: Event = {
-      id: uuidv4(), // Generate a unique ID
+      id: populatedData?.id || uuidv4(), // Generate a unique ID
       title: formData.title,
       startDate: formData.startDate,
       endDate: formData.endDate,
       variant: formData.variant,
       description: formData.description,
+      recruitmentId: formData.recruitmentId,
     };
 
-    if (!typedData?.default?.id) handlers.handleAddEvent(newEvent);
-    else handlers.handleUpdateEvent(newEvent, typedData.default.id);
+    if (!populatedData?.id) handlers.handleAddEvent(newEvent);
+    else handlers.handleUpdateEvent(newEvent, populatedData.id);
     setClose(); // Close the modal after submission
   };
 
@@ -142,21 +110,42 @@ export default function AddEventModal({
         <CustomAddEventModal register={register} errors={errors} />
       ) : (
         <>
-          <div className="grid gap-2">
-            <Label htmlFor="title">Bài tuyển dụng liên quan</Label>
-            <Select>
-              <SelectTrigger className={`w-full`}>
-                <SelectValue placeholder="Chọn một bài tuyển dụng" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="1">Bài tuyển dụng 1</SelectItem>
-                  <SelectItem value="2">Bài tuyển dụng 2</SelectItem>
-                  <SelectItem value="3">Bài tuyển dụng 3</SelectItem>
-                  <SelectItem value="4">Bài tuyển dụng 4</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="title">Tiêu đề</Label>
+            <Input {...register("title")} placeholder="Tiêu đề cuộc họp *" />
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="title">Mô tả</Label>
+            <Input
+              {...register("description")}
+              placeholder="Mô tả lời mời cuộc họp"
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="title">Bài tuyển dụng</Label>
+            {isFetched && (
+              <Controller
+                control={control}
+                name="recruitmentId"
+                render={({ field: { value, onChange } }) => (
+                  <Select
+                    defaultValue={value}
+                    onValueChange={(value) => onChange(value)}
+                  >
+                    <SelectTrigger className={`w-full`}>
+                      <SelectValue placeholder="Chọn một bài tuyển dụng" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        {recruitments?.data.map((item) => (
+                          <SelectItem value={item.id}>{item.title}</SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+            )}
           </div>
 
           <SelectDate
@@ -166,6 +155,13 @@ export default function AddEventModal({
             }}
             setValue={setValue}
           />
+
+          {populatedData?.recruitmentId && (
+            <InviteToMeetingForm
+              recruitmentId={populatedData.recruitmentId}
+              meetingId={populatedData.id}
+            />
+          )}
 
           <div className="flex justify-end space-x-2 mt-4 pt-2 border-t">
             <Button variant="outline" type="button" onClick={() => setClose()}>
