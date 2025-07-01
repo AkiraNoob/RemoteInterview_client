@@ -13,7 +13,7 @@ const Page = () => {
             <ShortenedJobDescription />
             <DetailedJobDescription />
           </div>
-          <div className="space-y-6">
+          <div className="space-y-6 max-w-[400px]">
             <CompanyDescription />
             <JobsSuggestion />
           </div>

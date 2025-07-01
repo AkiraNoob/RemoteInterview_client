@@ -100,7 +100,7 @@ export interface IApplicationDetail {
   id: string;
   userId: string;
   recruitmentId: string;
-  cv: {
+  appliedCv: {
     fileId: string;
     fileName: string;
     fileUrl: string;

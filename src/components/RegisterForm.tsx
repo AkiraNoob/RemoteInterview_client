@@ -3,6 +3,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { postRegister } from "~/api/authentication";
 import { Button } from "~/components/ui/button";
 import ErrorHelperText from "~/components/ui/error-helper-text";
@@ -23,7 +24,11 @@ const RegisterForm = () => {
   const { mutate, isPending } = useMutation({
     mutationFn: postRegister,
     onSuccess(data, variables, context) {
-      navigtaion.replace(PATH_NAME.ONBOARDING);
+      toast(
+        "Đăng kí thành công, vui lòng chọn form đăng nhập để tiến hành đăng nhập."
+      );
+
+      navigtaion.replace(PATH_NAME.LOGIN);
     },
   });
 

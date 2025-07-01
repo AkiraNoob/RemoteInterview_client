@@ -24,6 +24,9 @@ const LoginForm = () => {
   const { mutate, isPending } = useMutation({
     mutationFn: postLogin,
     onSuccess(data, variables, context) {
+      toast(
+        "Đăng nhập thành công, vui lòng chờ trong giây lát để được chuyển hướng."
+      );
       if (data.isOnboarded) {
         navigtaion.replace(PATH_NAME.HOME);
         return;
@@ -32,7 +35,7 @@ const LoginForm = () => {
       navigtaion.replace(PATH_NAME.ONBOARDING);
     },
     onError(error, variables, context) {
-      toast("Mật khẩu sai");
+      toast("Thông tin đăng nhập sai");
     },
   });
 

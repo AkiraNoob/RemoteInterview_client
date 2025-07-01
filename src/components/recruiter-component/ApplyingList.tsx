@@ -63,11 +63,11 @@ export default function ApplyingList() {
               <TableCell>{item.user.email}</TableCell>
               <TableCell>
                 <a
-                  href={item.cv.fileUrl}
+                  href={item.appliedCv.fileUrl}
                   target="_blank"
                   className="underline cursor-pointer"
                 >
-                  {item.cv.fileName}
+                  {item.appliedCv.fileName}
                 </a>
               </TableCell>
               <TableCell className="text-center">

@@ -36,6 +36,8 @@ export default function OnboardingForm(
   props: ComponentPropsWithoutRef<"form">
 ) {
   const [role, setRole] = useState<EUserRole | undefined>(EUserRole.Employee);
+  const { register, control, handleSubmit, getValues } =
+    useForm<ICompleteProfileForm>();
 
   const navigation = useRouter();
 
@@ -60,12 +62,19 @@ export default function OnboardingForm(
         const userId = cookieCommons.getUserId() || "";
         await putRegisterCompanyRole(userId as string);
       },
-      onSuccess(data, variables, context) {
-        navigation.push(PATH_NAME.RECRUITMENT);
+      onSuccess(_, variables, context) {
+        mutate({
+          userId: cookieCommons.getUserId() as string,
+          fullName: getValues("fullName"),
+          phoneNumber: getValues("phoneNumber"),
+          address: getValues("address"),
+          provinceId: parseInt(getValues("provinceId")),
+          districtId: parseInt(getValues("districtId")),
+          taxNumber: getValues("taxNumber"),
+          companyRegistrationImage: getValues("companyRegistrationImage")?.[0],
+        });
       },
     });
-
-  const { register, control, handleSubmit } = useForm<ICompleteProfileForm>();
 
   const watch = useWatch({
     control,
@@ -75,16 +84,6 @@ export default function OnboardingForm(
   const onSubmit = async (data: ICompleteProfileForm) => {
     if (role === EUserRole.Employer) {
       await registerCompany();
-      mutate({
-        userId: cookieCommons.getUserId() as string,
-        fullName: data.fullName,
-        phoneNumber: data.phoneNumber,
-        address: data.address,
-        provinceId: parseInt(data.provinceId),
-        districtId: parseInt(data.districtId),
-        taxNumber: data.taxNumber,
-        companyRegistrationImage: data.companyRegistrationImage?.[0],
-      });
     } else {
       mutate({
         userId: cookieCommons.getUserId() as string,

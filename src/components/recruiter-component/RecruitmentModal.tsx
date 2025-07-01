@@ -1,6 +1,6 @@
 "use client";
 
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { convertToHTML } from "draft-convert";
 import { ContentState, EditorState, convertFromHTML } from "draft-js";
 import { ChevronDownIcon, XIcon } from "lucide-react";
@@ -84,6 +84,7 @@ export default function RecruitmentModal({
   } = useRecruitmentDetail({
     recruitmentId: recruitmentId,
   });
+  const queryClient = useQueryClient();
 
   const { mutate, isPending } = useMutation({
     mutationFn: !recruitmentId
@@ -91,6 +92,11 @@ export default function RecruitmentModal({
       : async (data: IMutateRecruitmentRequest) =>
           await putUpdateRecruitment(recruitmentId, data),
     onSuccess(data, variables, context) {
+      queryClient.refetchQueries<string[]>({
+        queryKey: ["recruitment_user"],
+      });
+      toast("Tạo bài tuyển dụng thành công.");
+
       setOpen(false);
     },
     onError() {
